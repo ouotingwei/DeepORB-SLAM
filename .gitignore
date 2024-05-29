@@ -1,6 +1,6 @@
 build/*
 devel/*
-src/DeepModule/venv/*
-src/DeepModule/selector_weight/*
-src/DeepModule/semantic_weight/*
+src/ORB_SLAM2_NOETIC/DeepModule/venv/*
+src/ORB_SLAM2_NOETIC/DeepModule/selector_weight/*
+src/ORB_SLAM2_NOETIC/DeepModule/semantic_weight/*
 src/ORB_SLAM2_NOETIC/build/*
