@@ -12,7 +12,7 @@ from cv_bridge import CvBridge
 import threading
 import pickle
 
-model = YOLO("/home/wei/DeepORB-SLAM/src/ORB_SLAM2_NOETIC/DeepModule/semantic_weight/bestnamegood.pt")
+model = YOLO("/home/wei/orbslam_selector/src/DeepModule/semantic_weight/bestnamegood.pt")
 results = None
 results_lock = threading.Lock()
 

@@ -157,7 +157,7 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
         return;
 
     UndistortKeyPoints();
-
+    /*
     // socket (Semantic)
     int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket == -1) {
@@ -187,15 +187,16 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
     cv::Mat received_des;
     receive_two_sets_of_keypoint_data(clientSocket, received_kpUn, received_kp, received_des);
 
-    mvKeysUn = received_kpUn;
-    mvKeys = received_kp;
-    mDescriptors = received_des;
+    //mvKeysUn = received_kpUn;
+    //mvKeys = received_kp;
+    //mDescriptors = received_des;
 
     // shutdown socket
     close(clientSocket);
 
     // recompute the size
     N = mvKeys.size();
+    */
 
     ComputeStereoFromRGBD(imDepth);
 
