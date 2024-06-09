@@ -33,7 +33,10 @@
 #include "ORBmatcher.h"
 #include "MapPoint.h"
 #include "ORBextractor.h"
+
+#include "DataPreprocess.h"
 #include "DeepModuleCommunicate.h"
+
 
 //#include <thread>
 
@@ -157,46 +160,95 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
         return;
 
     UndistortKeyPoints();
-    /*
-    // socket (Semantic)
-    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (clientSocket == -1) {
-        return;
-    }
+    
+    int flag_ = 2; 
+    // flag=0 -> origin orb-slam
+    // flag=1 -> orb-slam+humanfilter
+    // flag=3 -> orb-slam+FSM
 
-    struct sockaddr_in serverAddr;
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(8888); 
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
+    if (flag_ == 1) {
+        // Semantic Segmentation 
+        // socket
+        int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+        
+        if (clientSocket == -1) { 
+            return; 
+        }
 
-    // cinnected to server
-    if (connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1) {
-        // connected failed
+        struct sockaddr_in serverAddr;
+        serverAddr.sin_family = AF_INET;
+        serverAddr.sin_port = htons(8888); 
+        serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
+
+        // cinnected to server
+        if (connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1) {
+            // connected failed
+            close(clientSocket);
+            return;
+        }
+
+        // sending data to server
+        SendTwoSetsOfKeyPoints(clientSocket, mvKeysUn, mvKeys, mDescriptors);
+
+        // wait for deeplearning inference
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+        // receive keypoint data from server
+        receive_two_sets_of_keypoint_data(clientSocket, mvKeysUn, mvKeys, mDescriptors);
+
+        // shutdown socket
         close(clientSocket);
-        return;
+
+        // recompute the size
+        N = mvKeys.size();
     }
+    else if (flag_ == 2){
+        // Feature Selection Model
+        // socket
+        int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
-    // sending data to server
-    SendTwoSetsOfKeyPoints(clientSocket, mvKeysUn, mvKeys, mDescriptors);
+        if (clientSocket == -1) { 
+            return; 
+        }
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        struct sockaddr_in serverAddr;
 
-    // receive keypoint data from server
-    std::vector<cv::KeyPoint> received_kpUn;
-    std::vector<cv::KeyPoint> received_kp;
-    cv::Mat received_des;
-    receive_two_sets_of_keypoint_data(clientSocket, received_kpUn, received_kp, received_des);
+        serverAddr.sin_family = AF_INET;
+        serverAddr.sin_port = htons(8888); 
+        serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
 
-    //mvKeysUn = received_kpUn;
-    //mvKeys = received_kp;
-    //mDescriptors = received_des;
+        // cinnected to server
+        if (connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1) {
+            // connected failed
+            close(clientSocket);
+            return;
+        }
 
-    // shutdown socket
-    close(clientSocket);
+        // generate input
+        std::vector<std::vector<float>> input_data;
+        model_input(mvKeysUn, mvKeys, mDescriptors, imDepth, input_data);
 
-    // recompute the size
-    N = mvKeys.size();
-    */
+        //std::cout << "mvKeysUn size : " << mvKeysUn.size() << std::endl;
+        //std::cout << "input_data size : " << input_data.size() << std::endl;
+
+        // send data to model ( server )
+        send_data_to_FSM(clientSocket, input_data);
+
+        // wait for deeplearning inference
+        std::this_thread::sleep_for(std::chrono::milliseconds(30));
+
+        // receive keypoint data from server
+        std::vector<float> output_data = receive_data_from_FSM(clientSocket);
+
+        // output decoded:
+        output_decoded(mvKeysUn, mvKeys, mDescriptors, output_data);
+
+        // shutdown socket
+        close(clientSocket);
+
+        // recompute the size
+        N = mvKeys.size();
+    }
 
     ComputeStereoFromRGBD(imDepth);
 

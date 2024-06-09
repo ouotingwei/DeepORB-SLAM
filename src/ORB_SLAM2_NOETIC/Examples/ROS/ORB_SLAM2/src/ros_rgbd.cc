@@ -65,6 +65,13 @@ int main(int argc, char **argv)
 
     ros::NodeHandle nh;
 
+    // openloris
+    //message_filters::Subscriber<sensor_msgs::Image> rgb_sub(nh, "/d400/color/image_raw", 1);
+    //message_filters::Subscriber<sensor_msgs::Image> depth_sub(nh, "/d400/aligned_depth_to_color/image_raw", 1);
+    // tum
+    //message_filters::Subscriber<sensor_msgs::Image> rgb_sub(nh, "/camera/rgb/image_color", 1);
+    //message_filters::Subscriber<sensor_msgs::Image> depth_sub(nh, "/camera/depth/image", 1);
+    // lab605
     message_filters::Subscriber<sensor_msgs::Image> rgb_sub(nh, "/camera/color/image_raw", 1);
     message_filters::Subscriber<sensor_msgs::Image> depth_sub(nh, "/camera/aligned_depth_to_color/image_raw", 1);
     typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> sync_pol;

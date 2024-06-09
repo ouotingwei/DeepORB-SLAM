@@ -135,3 +135,40 @@ void receive_two_sets_of_keypoint_data(int clientSocket,
 
     mDescriptors = cv::Mat(rows, cols, type, descriptorData.data()).clone();
 }
+
+
+
+void send_data_to_FSM(int clientSocket, std::vector<std::vector<float>>& input_data) {
+    int rows = input_data.size();
+    int cols = (rows > 0) ? input_data[0].size() : 0;
+
+    //std::cout << rows << " " << cols << std::endl;
+
+    send(clientSocket, &rows, sizeof(int), 0);
+    send(clientSocket, &cols, sizeof(int), 0);
+
+    for (int i = 0; i < rows; ++i) {
+        const float* row_data = input_data[i].data(); // 獲取當前行的數據指針
+        send(clientSocket, row_data, cols * sizeof(float), 0); // 將數據發送到客戶端
+    }
+}
+
+
+std::vector<float> receive_data_from_FSM(int clientSocket) {
+    // 接收行数和列数
+    int rows, cols;
+    int valread = read(clientSocket, &rows, sizeof(rows));
+    valread = read(clientSocket, &cols, sizeof(cols));
+
+    // 接收数据
+    std::vector<float> label_array(rows);
+    for (int i = 0; i < rows; ++i) {
+        float value;
+        valread = read(clientSocket, &value, sizeof(value));
+        label_array[i] = value;
+    }
+
+    std::cout << label_array.size() << std::endl;
+
+    return label_array;
+}

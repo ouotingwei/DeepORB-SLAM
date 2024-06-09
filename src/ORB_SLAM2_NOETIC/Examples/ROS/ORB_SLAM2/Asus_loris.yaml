@@ -5,27 +5,24 @@
 #--------------------------------------------------------------------------------------------
 
 # Camera calibration and distortion parameters (OpenCV) 
-# RGB-D Realsense-D435
-Camera.fx: 589.662879
-Camera.fy: 592.577963
-Camera.cx: 313.100104
-Camera.cy: 251.210229
-
+Camera.fx: 611.4509887695312
+Camera.fy: 611.4857177734375
+Camera.cx: 433.2039794921875
+Camera.cy: 249.4730224609375
 
 Camera.k1: 0.0
 Camera.k2: 0.0
 Camera.p1: 0.0
 Camera.p2: 0.0
-Camera.k3: 0.0
 
-Camera.width: 640
+Camera.width: 848
 Camera.height: 480
 
 # Camera frames per second 
 Camera.fps: 30.0
 
 # IR projector baseline times fx (aprox.)
-Camera.bf: 46.01
+Camera.bf: 9.052
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 1
@@ -34,7 +31,7 @@ Camera.RGB: 1
 ThDepth: 40.0
 
 # Deptmap values factor
-DepthMapFactor: 1000.0
+DepthMapFactor: 1000
 
 #--------------------------------------------------------------------------------------------
 # ORB Parameters
@@ -69,4 +66,3 @@ Viewer.ViewpointX: 0
 Viewer.ViewpointY: -0.7
 Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500
-

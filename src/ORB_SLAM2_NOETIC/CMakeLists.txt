@@ -70,7 +70,6 @@ src/KeyFrameDatabase.cc
 src/Sim3Solver.cc
 src/Initializer.cc
 src/Viewer.cc
-# modified part
 src/DeepModuleCommunicate.cc
 src/DataPreprocess.cc
 )

@@ -23,6 +23,8 @@ void receive_two_sets_of_keypoint_data(int clientSocket,
                                        cv::Mat& mDescriptors);
 
 // Feature Selection
+void send_data_to_FSM(int clientSocket, std::vector<std::vector<float>>& input_data);
+std::vector<float> receive_data_from_FSM(int clientSocket);
 
 
 #endif // DEEP_MODULE_COMMUNICATE_H
